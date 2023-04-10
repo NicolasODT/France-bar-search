@@ -1,6 +1,7 @@
 <?php
 require_once "config.php";
 
+// On récupère l'id de la ville dans l'URL
 $id = $_GET['id'] ?? '';
 
 if (!empty($id) && is_numeric($id)) {
@@ -29,7 +30,7 @@ if (!empty($id) && is_numeric($id)) {
         <?php if (!empty($result)): ?>
             <table class="table">
                 <tbody>
-                    <?php foreach ($result as $key => $value): ?>
+                    <?php foreach ($result as $key => $value): ?> // $key = nom de la colonne (ex: id, nom, code_postal, ...) et $value = valeur de la colonne (ex: 1, Paris, 75000, ...)
                         <tr>
                             <th><?= htmlspecialchars($key) ?></th>
                             <td><?= htmlspecialchars($value) ?></td>

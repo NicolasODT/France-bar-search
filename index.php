@@ -5,32 +5,42 @@ $search = $_GET['search'] ?? '';
 $sort_by = $_GET['sort_by'] ?? '';
 $order = $_GET['order'] ?? 'asc';
 
+// generate_sort_link() génère le lien pour trier les résultats 
 function generate_sort_link($column, $current_sort_by, $current_order) {
-    $new_order = ($current_order === 'asc') ? 'desc' : 'asc';
-    $icon = ($current_sort_by === $column) ? ($current_order === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down') : 'fas fa-sort';
+    $new_order = ($current_order === 'asc') ? 'desc' : 'asc'; // ordre de tri inverse (asc => desc, desc => asc)
+    $icon = ($current_sort_by === $column) ? ($current_order === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down') : 'fas fa-sort'; // icône de tri
+    
+    //sprintf() permet de générer une chaîne de caractères en remplaçant les %s par les valeurs passées en paramètre
+    //on passe urlencode() sur les paramètres pour éviter les problèmes d'encodage
+    //on retourne le lien généré
     return sprintf(
         '<a href="?search=%s&sort_by=%s&order=%s"><i class="%s"></i></a>',
         urlencode($_GET['search'] ?? ''),
-        urlencode($column),
-        urlencode($new_order),
-        $icon
+        urlencode($column), // colonne sur laquelle on veut trier
+        urlencode($new_order),  // ordre de tri
+        $icon // icône de tri
     );
 }
 
-$valid_sort_columns = ['nom_simple', 'code_postal', 'code_commune', 'population_2010', 'densite_2010'];
-$valid_orders = ['asc', 'desc'];
+$valid_sort_columns = ['nom_simple', 'code_postal', 'code_commune', 'population_2010', 'densite_2010']; // colonnes sur lesquelles on peut trier les résultats
+$valid_orders = ['asc', 'desc']; // ordres de tri possibles
 
+// On récupère les villes correspondant à la recherche
 if (!empty($search)) {
     $min_population = $_GET['min_population'] ?? '';
     $sql = "SELECT * FROM villes WHERE (nom_simple LIKE :search OR code_postal LIKE :search OR code_commune LIKE :search)";
+    // On ajoute la condition sur la population si elle est renseignée et si elle est un nombre
     if (!empty($min_population) && is_numeric($min_population)) {
         $sql .= " AND (population_2010 >= :min_population)";
     }
+    // On ajoute le tri si les paramètres sont valides (voir $valid_sort_columns et $valid_orders)
     if (in_array($sort_by, $valid_sort_columns) && in_array($order, $valid_orders)) {
         $sql .= " ORDER BY {$sort_by} {$order}";
     }
     $stmt = $pdo->prepare($sql);
     $stmt->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
+
+    // On ajoute la valeur de la population si elle est renseignée et si elle est un nombre
     if (!empty($min_population) && is_numeric($min_population)) {
         $stmt->bindValue(':min_population', $min_population, PDO::PARAM_INT);
     }
