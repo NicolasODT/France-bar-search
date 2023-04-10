@@ -30,7 +30,7 @@ if (!empty($id) && is_numeric($id)) {
         <?php if (!empty($result)): ?>
             <table class="table">
                 <tbody>
-                    <?php foreach ($result as $key => $value): ?> // $key = nom de la colonne (ex: id, nom, code_postal, ...) et $value = valeur de la colonne (ex: 1, Paris, 75000, ...)
+                    <?php foreach ($result as $key => $value): // $key = nom de la colonne (ex: id, nom, code_postal, ...) et $value = valeur de la colonne (ex: 1, Paris, 75000, ...)?> 
                         <tr>
                             <th><?= htmlspecialchars($key) ?></th>
                             <td><?= htmlspecialchars($value) ?></td>
